@@ -10,7 +10,7 @@ export const getStock = async (category) => {
     include: {
       item: true,
       supplier: true,
-      unit: true,
+      // unit: true,
       clasification: true
     },
   });

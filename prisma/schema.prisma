@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -15,9 +9,10 @@ generator client {
 
 model Item {
   id               Int    @id @default(autoincrement())
-  item_code        String
-  item_description String
+  item_code        String @unique
   zahir_code       String
+  item_description String
+  unit_name_id     Int
   price            Float
   image            String
   init_stock       Int
@@ -25,8 +20,15 @@ model Item {
   create_by        String
   update_by        String
 
-  produksis       Produksi[]
+  unit            Unit @relation(fields: [unit_name_id], references: [id])
   stock_histories StockHistory[]
+}
+
+model Unit {
+  id        Int    @id @default(autoincrement())
+  unit_name String
+
+  items          Item[]
 }
 
 model Supplier {
@@ -35,42 +37,14 @@ model Supplier {
   alamat        String
   phone         String
 
-  produksis    Produksi[]
-  StockHistory StockHistory[]
-}
-
-model Unit {
-  id        Int    @id @default(autoincrement())
-  unit_name String
-
-  produksis    Produksi[]
-  StockHistory StockHistory[]
+  stock_histories StockHistory[]
 }
 
 model Clasification {
   id                 Int    @id @default(autoincrement())
   clasification_name String
 
-  produksis    Produksi[]
-  StockHistory StockHistory[]
-}
-
-model Produksi {
-  id                     Int @id @default(autoincrement())
-  item_code_id           Int
-  zahir_code_id          Int
-  item_description_id    Int
-  price_id               Int
-  unit_name_id           Int
-  supplier_name_id       Int
-  clasifications_name_id Int
-  init_stock_id          Int
-  current_stock_id       Int
-
-  item          Item          @relation(fields: [item_code_id], references: [id])
-  supplier      Supplier      @relation(fields: [supplier_name_id], references: [id])
-  unit          Unit          @relation(fields: [unit_name_id], references: [id])
-  clasification Clasification @relation(fields: [clasifications_name_id], references: [id])
+  stock_histories StockHistory[]
 }
 
 model StockHistory {
@@ -83,18 +57,16 @@ model StockHistory {
   create_by_id           String
   update_by_id           String
   current_stock_id       Int
-  unit_name_id           Int
   supplier_name_id       Int
   clasifications_name_id Int
 
   item          Item          @relation(fields: [item_code_id], references: [id])
   supplier      Supplier      @relation(fields: [supplier_name_id], references: [id])
-  unit          Unit          @relation(fields: [unit_name_id], references: [id])
   clasification Clasification @relation(fields: [clasifications_name_id], references: [id])
 }
 
 model Admin {
-  id String @id @default(uuid())
+  id         String   @id @default(uuid())
   fullname   String
   username   String   @unique
   password   String

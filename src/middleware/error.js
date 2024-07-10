@@ -1,3 +1,4 @@
+// src/middlare/error.js 
 export class HttpException extends Error {
   constructor(statusCode, message) {
     super(message);
