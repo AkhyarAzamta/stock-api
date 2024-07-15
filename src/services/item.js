@@ -5,9 +5,15 @@ import { HttpException } from "../middleware/error.js";
 export const addItem = async (data, userId) => {
   const { item_code, zahir_code, item_description, unit_name_id, price, image, init_stock } = data;
 
+  const units = await prisma.unit.findUnique({
+    where: { id: unit_name_id },
+  });
+  if (!units) {
+    throw new HttpException(404, "Item Unit found");
+  }
   // Periksa apakah item dengan kode yang sama sudah ada
   const existingItem = await prisma.item.findUnique({
-    where: { item_code },
+    where: { zahir_code },
   });
   if (existingItem) {
     throw new HttpException(400, "Item with the same code already exists");
@@ -45,7 +51,12 @@ export const addItem = async (data, userId) => {
 
 // Fungsi untuk mendapatkan semua item
 export const getItems = async () => {
-  const items = await prisma.item.findMany();
+  const items = await prisma.item.findMany({
+    include: {
+      unit: true,
+      stock_histories: true
+    },
+  });
   if (!items || items.length === 0) {
     throw new HttpException(404, "No items found");
   }

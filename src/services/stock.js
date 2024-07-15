@@ -10,8 +10,8 @@ export const getStock = async (category) => {
     include: {
       item: true,
       supplier: true,
-      // unit: true,
       clasification: true
+      // unit: true,
     },
   });
   if (!stock || stock.length === 0) {  // Periksa apakah array kosong

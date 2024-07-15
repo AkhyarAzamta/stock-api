@@ -9,8 +9,8 @@ generator client {
 
 model Item {
   id               Int    @id @default(autoincrement())
-  item_code        String @unique
-  zahir_code       String
+  item_code        String 
+  zahir_code       String @unique
   item_description String
   unit_name_id     Int
   price            Float
@@ -19,7 +19,7 @@ model Item {
   current_stock    Int
   create_by        String
   update_by        String
-
+  
   unit            Unit @relation(fields: [unit_name_id], references: [id])
   stock_histories StockHistory[]
 }
